@@ -175,3 +175,6 @@ products_vectorstore/
 # ignore gradio private files
 .gradio
 /.gradio
+
+# Reservas simuladas generadas por el asistente de vuelos (week2/task_week_2.ipynb)
+week2/reservas/

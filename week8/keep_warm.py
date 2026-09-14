@@ -2,7 +2,7 @@ import time
 import modal
 from datetime import datetime
 
-Pricer = modal.Cls.lookup("pricer-service", "Pricer")
+Pricer = modal.Cls.from_name("pricer-service", "Pricer")
 pricer = Pricer()
 while True:
     reply = pricer.wake_up.remote()

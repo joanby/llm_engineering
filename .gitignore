@@ -175,3 +175,6 @@ products_vectorstore/
 # ignore gradio private files
 .gradio
 /.gradio
+.venv_qa/
+_colabs_originales/
+_qa_run_outputs/

@@ -10,7 +10,7 @@
 
 El curso se grabó con las librerías de finales de 2024 y `requirements.txt` no fijaba **ni una sola versión**. Eso es lo que ha causado el desfase: cada alumno nuevo instalaba lo último que hubiera ese día, y varias APIs del ecosistema han cambiado de forma incompatible desde entonces.
 
-Se han corregido **11 commits** de arreglos sobre los 3 que ya existían. El cambio de fondo, además de los arreglos concretos, es que ahora las versiones están fijadas: el curso deja de moverse solo.
+Se han corregido **11 commits** de arreglos sobre los 3 que ya existían, más **5** de la revisión final previa a publicar (sección 7). El cambio de fondo, además de los arreglos concretos, es que ahora las versiones están fijadas: el curso deja de moverse solo.
 
 Hay tres categorías de problema, y conviene no mezclarlas:
 
@@ -39,7 +39,17 @@ Hay tres categorías de problema, y conviene no mezclarlas:
 | `b7d703a` | **Semana 6** — `lite.ipynb` no cargaba ningún dataset (una `x` suelta) |
 | `f321cd4` | **Dependencias** — fijar versiones reales y añadir los paquetes que faltaban |
 
-**Nota sobre las Semanas 3 y 7:** sus `dayN.ipynb` eran punteros a Colab de una sola celda Markdown. Ahora contienen el notebook real, integrado desde `_colabs_originales/`, con los arreglos aplicados.
+**Nota sobre las Semanas 3 y 7:** sus `dayN.ipynb` eran punteros a Colab de dos celdas (un Markdown de presentación y una celda de código vacía). Ahora contienen el notebook real, integrado desde `_colabs_originales/`, con los arreglos aplicados.
+
+A esos 14 se suman los 5 de la **revisión final antes de publicar** (sección 7), que es una pasada distinta: no busca desfase de librerías, busca lo que se nos haya escapado al arreglarlo.
+
+| Commit | Qué cubre |
+|---|---|
+| `fe269e1` | **Semana 8** — el comentario del `.from_name()` rompía la asignación en `day1` (`SyntaxError`) |
+| `e6fb19e` | **Semanas 4 y 6** — limpiar dos salidas guardadas que contradicen el código actual |
+| `ec4e68e` | **README y comentarios** — nombres de modelo viejos supervivientes, incluido uno que se ejecutaría |
+| `eb55ca5` | **Semana 7** — quitar el estado de widgets huérfano que impide renderizar en GitHub |
+| `0386f18` | **Semanas 3 y 7** — los notebooks integrados no pasaban `nbformat.validate()` |
 
 ---
 
@@ -186,9 +196,40 @@ Toda la verificación se hizo **secuencialmente, nunca en paralelo**, y comproba
 - **Semanas 2, 4 y 5 completas** — bloqueadas por el saldo de OpenAI.
 - **`push_to_hub`** — no se ha ejecutado en ningún notebook, para no escribir en la cuenta de HuggingFace del usuario.
 
+**Salidas que se han limpiado en vez de refrescarse** (ver sección 7):
+- **`week6/day4.ipynb`, celda `Tester.test(claude_sonnet, test)`** — se deja con la salida vacía. Refrescarla son 250 llamadas reales a Claude sobre los 250 items del test, que no es una comprobación puntual barata. Lo que sí está verificado contra la API real es la llamada corregida (commit `0718b07`). El alumno verá esa celda sin ejecutar, que es honesto; la referencia de resultados sigue estando en `day4-results.ipynb`.
+- **`week6/day4-results.ipynb`** — este SÍ conserva su salida, a propósito: su razón de existir es enseñar los resultados sin que el alumno pague por ellos. Pero conviene saberlo: esas 250 predicciones y ese gráfico se generaron con `claude-3-5-sonnet-20240620`, el modelo de antes. Con `claude-sonnet-5` los números **serán distintos** (probablemente mejores). No hay nada engañoso a la vista —no aparece ningún nombre viejo en la salida— pero si se quiere una referencia fiel al código de hoy, hay que regenerarla pagando esas 250 llamadas.
+- **`week4/day3.ipynb`, celda del `gr.Blocks(...)`** — se deja con la salida vacía. Lanzar esa celda abre un servidor Gradio interactivo; no tiene sentido guardarle una salida.
+
+**Comprobado y correcto, pero merece constar porque es el tipo de cosa que falla en silencio:** el índice literal `embeddings_dataset[7306]["xvector"]` (Semana 3, Días 1 y 2) se escribió contra la carga antigua del dataset, y el arreglo la cambió a `revision="refs/convert/parquet"`. Si esa conversión hubiera reordenado las filas, la celda seguiría funcionando pero el alumno oiría **otra voz** que la del vídeo, sin ningún error de por medio. Comprobado contra la API de HuggingFace: el split `validation` tiene las mismas 7.931 filas y la 7306 sigue siendo `cmu_us_slt_arctic-wav-arctic_a0508`. Es la misma voz. No hay que tocar nada.
+
 ---
 
-## 7. Lo siguiente
+## 7. Revisión final antes de publicar
+
+Pasada específica de control de calidad sobre la rama ya montada, con la checklist del método de actualización de cursos. Lo que buscaba y lo que encontró:
+
+| Commit | Qué encontró |
+|---|---|
+| `fe269e1` | **Dos celdas de `week8/day1.ipynb` con `SyntaxError`.** El comentario del `.from_name()` se había colado **detrás** del `=` (`pricer = # comentario` y luego la llamada en la línea siguiente). Ninguna de las dos celdas podía ejecutarse. Lo tapaba su propia salida guardada (`133.0`), de la ejecución original del autor, que hacía parecer que la celda estaba bien. Lo delató comparar con los ficheros hermanos: el mismo arreglo en `agents/specialist_agent.py` y en `keep_warm.py` estaba bien hecho |
+| `e6fb19e` | **Dos salidas guardadas que contradecían el código.** En `week6/day4.ipynb`, un `InternalServerError: 500` cuyo traceback mostraba literalmente `claude_3_point_5_sonnet` y `model="claude-3-5-sonnet-20240620"`, es decir, el código que `0718b07` ya había cambiado. En `week4/day3.ipynb`, un `NameError: name 'gr' is not defined` con `execution_count: 1`, de una ejecución suelta de esa celda sin pasar por los imports |
+| `ec4e68e` | **Cuatro nombres de modelo viejos supervivientes en comentarios y prosa.** El peor, en `README.md`: la guía de costes del curso seguía diciendo "utilice siempre `claude-3-haiku-20240307`", que devuelve 404 |
+| `eb55ca5` | **620 KB de estado de widgets huérfano** en los cuatro notebooks grandes de la Semana 7. Mal formado tal y como lo exporta Colab (sin la clave `state`), que es justo lo que hace que **GitHub se niegue a renderizar el notebook**. La Semana 3 ya lo tenía quitado; la 7 no |
+| `0386f18` | **Los nueve notebooks integrados de las Semanas 3 y 7 no pasaban `nbformat.validate()`**: conservaban el `id` de celda del stub 4.5 al que sustituyeron dentro de un fichero que declara 4.0. Se ve en que el mismo `id` estaba repetido en cuatro ficheros distintos. Jupyter lo avisa al alumno con "Notebook JSON is invalid" |
+
+**Lo que se buscó y resultó estar limpio**, que también conviene saberlo:
+
+- **Salidas contaminadas por las ejecuciones de diagnóstico de la auditoría.** Era la sospecha principal: durante la Fase 2 se ejecutaron muchos notebooks con `nbconvert --execute --allow-errors` y claves reales, antes de arreglar el código. Comprobado celda a celda en los 29 notebooks tocados, comparando cada `outputs` contra el de `d298c9a`: **no ha cambiado ni una sola línea dentro de ningún bloque `outputs`**. Los 14 commits de arreglo son cambios de código puros. Las dos salidas del commit `e6fb19e` ya venían commiteadas desde antes del fork.
+- **Sintaxis de todas las celdas.** Los 51 notebooks (fuera de `community-contributions/`) y los 24 `.py` del árbol, parseados con `ast`. Tras `fe269e1`, cero errores.
+- **Tamaño real del repo.** Medido con `git ls-tree` y no con `find`, porque ejecutar notebooks puede dejar basura en el working tree: 41,84 MiB en `d298c9a` → 41,99 MiB ahora. Nada se ha colado; los `.pkl`, los vectorstores y los `__pycache__` están todos ignorados.
+- **Las celdas `!pip install` de los notebooks integrados** siguen ahí, palabra por palabra como en los Colabs originales. No se borró ninguna al integrarlos.
+- **Consistencia del patrón `workspace_id`.** Las seis implementaciones (Semanas 2, 4 y 6) son idénticas línea a línea.
+- **Efectos de segundo orden de fijar `model="gpt2"`** en `week3/day2`: esa variable (`generator`) no se reutiliza en ninguna celda posterior. El `chat_model` que sí se comparte entre tres celdas está documentado en la propia celda.
+- **Los notebooks de la Semana 7 contra sus Colabs originales**: los Días 1, 2 y 5 y los dos auxiliares son idénticos en código, celda por celda. Solo cambió `day3 and 4.ipynb`, como dice la sección 3. Lo mismo en la Semana 3: el Día 3 tiene cero cambios de código.
+
+---
+
+## 8. Lo siguiente
 
 1. **Recargar saldo en OpenAI** y volver a lanzar las Semanas 1, 2, 4, 5 y `week6/day4-day5` para cerrar la verificación.
 2. **Terminar de subir `joanby/pricer-data`**; con eso se desbloquea la Semana 7 entera y se puede validar la migración de `trl` con datos de verdad.
@@ -197,4 +238,4 @@ Toda la verificación se hizo **secuencialmente, nunca en paralelo**, y comproba
 5. Decidir sobre la regrabación de la parte de memoria/cadenas de LangChain (punto 8 de la sección 5).
 
 > La rama está **solo en local**: sin push y sin PR, como se pidió. `main` no se ha tocado.
-> Los directorios `.venv_qa/`, `_colabs_originales/` y `_qa_run_outputs/` están sin trackear a propósito (son material de trabajo de la auditoría). Conviene decidir si se añaden a `.gitignore` o se borran antes de hacer push.
+> Los directorios `.venv_qa/`, `_colabs_originales/` y `_qa_run_outputs/` son material de trabajo de la auditoría y **ya están en `.gitignore`** desde el commit `992b3e3`, así que no se subirán. Queda decidir si se borran del disco o se guardan aparte: `_colabs_originales/` contiene los Colabs reales recuperados de Drive, que conviene no perder.

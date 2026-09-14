@@ -81,7 +81,7 @@ Puedes mantener tu gasto de API muy bajo a lo largo de este curso; puedes monito
 
 Los gastos de los ejercicios de este curso deberían ser siempre bastante bajos, pero si prefieres que sean mínimos, asegúrate de elegir siempre las versiones más baratas de los modelos:
 1. Para OpenAI: Utiliza siempre el modelo `gpt-4o-mini` en el código en lugar de `gpt-4o`.
-2. Para Anthropic: Utilice siempre el modelo `claude-3-haiku-20240307` en el código en lugar de los otros modelos Claude
+2. Para Anthropic: Utilice siempre el modelo `claude-haiku-4-5` en el código en lugar de los otros modelos Claude
 3. Durante la semana 7, estate atento a mis instrucciones para utilizar el conjunto de datos más barato
 
 

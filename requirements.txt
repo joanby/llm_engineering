@@ -1,41 +1,76 @@
-python-dotenv
-jupyterlab
-ipywidgets
-requests
-numpy
-pandas
-scipy
-scikit-learn
-matplotlib
-gensim
-torch
-transformers
-tqdm
-openai
-gradio
-langchain
-tiktoken
-faiss-cpu
-langchain-openai
-langchain_experimental
-langchain_chroma
-langchain[docarray]
-datasets
-sentencepiece
-matplotlib
-google.generativeai
-anthropic
-scikit-learn
-unstructured
-chromadb
-plotly
-jupyter-dash
-beautifulsoup4
-pydub
-modal
-ollama
-accelerate
-sentencepiece
-bitsandbytes
-feedparser
-twilio
+# Versiones fijadas a partir de un entorno real (.venv_qa, Python 3.12) en el que se
+# ejecutó y verificó el curso entero en septiembre de 2026.
+# Si algo deja de funcionar dentro de unos meses, este fichero es el punto de partida
+# conocido que sí funcionaba.
+
+# --- Base ---
+python-dotenv==1.2.3
+jupyterlab==4.6.3
+ipywidgets==8.1.9
+requests==2.34.2
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.1
+matplotlib==3.11.2
+plotly==7.0.0
+jupyter-dash==0.4.2
+beautifulsoup4==4.15.0
+
+# --- APIs de modelos propietarios ---
+openai==3.13.0
+anthropic==1.5.0
+google-generativeai==0.8.6
+tiktoken==0.14.0
+
+# --- Interfaz ---
+gradio==6.27.0
+
+# --- HuggingFace / modelos abiertos ---
+torch==2.14.0
+transformers==5.17.0
+huggingface_hub==1.31.0
+datasets==5.0.1
+accelerate==1.15.0
+sentencepiece==0.2.2
+bitsandbytes==0.50.2
+diffusers==0.40.0
+soundfile==0.14.0
+sentence-transformers==6.0.1
+
+# --- Fine-tuning (Semana 7) ---
+peft==0.20.0
+trl==1.13.0
+wandb==0.30.0
+
+# --- LangChain / RAG (Semana 5) ---
+# Antes aquí ponía `langchain[docarray]`, que ya no es un extra válido, y faltaban
+# los paquetes en los que se repartió el `langchain` clásico al partirse en 1.x.
+langchain==1.4.0
+langchain-core==1.6.3
+langchain-classic==1.0.8
+langchain-community==0.4.2
+langchain-openai==1.6.2
+langchain-chroma==1.1.0
+langchain-experimental==0.4.2
+langchain-text-splitters==1.1.2
+chromadb==1.5.9
+faiss-cpu==1.15.0
+unstructured==0.27.5
+
+# --- Semana 6 (word2vec / bag of words) ---
+gensim==4.4.0
+
+# --- Semana 8 (agentes, Modal, alertas) ---
+modal==1.5.5
+feedparser==6.0.14
+twilio==9.11.1
+
+# --- Semana 1 (modelo local) ---
+ollama==0.6.2
+
+# --- Audio (Semana 2 Día 5) ---
+pydub==0.25.1
+# `pydub` necesita además un backend de reproducción para sonar en local; en el
+# notebook se instala a mano porque no hace falta para el resto del curso:
+#   pip install simpleaudio

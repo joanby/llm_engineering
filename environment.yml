@@ -3,6 +3,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  # Los paquetes de base se dejan sin fijar a propósito: son los que conda resuelve bien
+  # solo y fijarlos a las versiones exactas de un entorno de pip haría el environment
+  # irresoluble en muchas máquinas.
   - python=3.11
   - pip
   - python-dotenv
@@ -16,33 +19,54 @@ dependencies:
   - jupyterlab
   - ipywidgets
   - pyarrow
-  - anthropic
-  - google-generativeai
   - matplotlib
   - scikit-learn
-  - chromadb
-  - langchain
-  - langchain-text-splitters
-  - langchain-openai
-  - langchain-experimental
-  - langchain-chroma
-  - faiss-cpu
-  - tiktoken
   - jupyter-dash
   - plotly
-  - twilio
   - duckdb
-  - feedparser
+  # Todo lo que sí lleva versión fija va por pip: son los paquetes cuyos cambios de API
+  # rompieron el curso, y estas son las versiones con las que se verificó entero en
+  # septiembre de 2026 (las mismas que requirements.txt).
   - pip:
-    - transformers
-    - sentence-transformers
-    - datasets
-    - accelerate
-    - sentencepiece
-    - bitsandbytes
-    - openai
-    - gradio
-    - gensim
-    - modal
-    - ollama
-
+    # APIs de modelos propietarios
+    - openai==3.13.0
+    - anthropic==1.5.0
+    - google-generativeai==0.8.6
+    - tiktoken==0.14.0
+    # Interfaz
+    - gradio==6.27.0
+    # HuggingFace / modelos abiertos
+    - transformers==5.17.0
+    - huggingface_hub==1.31.0
+    - datasets==5.0.1
+    - accelerate==1.15.0
+    - sentencepiece==0.2.2
+    - bitsandbytes==0.50.2
+    - diffusers==0.40.0
+    - soundfile==0.14.0
+    - sentence-transformers==6.0.1
+    # Fine-tuning (Semana 7)
+    - peft==0.20.0
+    - trl==1.13.0
+    - wandb==0.30.0
+    # LangChain / RAG (Semana 5). Al partirse `langchain` en 1.x hicieron falta
+    # `langchain-community` y `langchain-classic`, que antes no estaban aquí.
+    - langchain==1.4.0
+    - langchain-core==1.6.3
+    - langchain-classic==1.0.8
+    - langchain-community==0.4.2
+    - langchain-openai==1.6.2
+    - langchain-chroma==1.1.0
+    - langchain-experimental==0.4.2
+    - langchain-text-splitters==1.1.2
+    - chromadb==1.5.9
+    - faiss-cpu==1.15.0
+    - unstructured==0.27.5
+    # Semana 6
+    - gensim==4.4.0
+    # Semana 8
+    - modal==1.5.5
+    - feedparser==6.0.14
+    - twilio==9.11.1
+    # Semana 1
+    - ollama==0.6.2

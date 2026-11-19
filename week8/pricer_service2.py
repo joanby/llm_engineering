@@ -27,7 +27,7 @@ PREFIX = "Price is $"
 
 @app.cls(image=image, secrets=secrets, gpu=GPU, timeout=1800)
 class Pricer:
-    @modal.build()
+    @modal.enter()  # Modal 1.x retiró @modal.build(): la descarga se hace al arrancar el contenedor
     def download_model_to_folder(self):
         from huggingface_hub import snapshot_download
         import os

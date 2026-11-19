@@ -20,7 +20,7 @@ beautifulsoup4==4.15.0
 # --- APIs de modelos propietarios ---
 openai==3.13.0
 anthropic==1.5.0
-google-generativeai==0.8.6
+google-genai==2.34.0
 tiktoken==0.14.0
 
 # --- Interfaz ---

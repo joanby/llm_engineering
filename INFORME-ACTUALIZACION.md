@@ -130,7 +130,7 @@ No se toca el `show_progress` de `agents/deals.py` ni el de `day3.ipynb`: ese es
 
 | Paquete | Grabación (2024) | Ahora |
 |---|---|---|
-| transformers | 4.4x | **5.17.0** |
+| transformers | 4.4x | **5.17.0** → **5.18.0** en noviembre (sección 9) |
 | datasets | 2.21.0 | **5.0.1** |
 | langchain | 0.2.x | **1.4.0** |
 | trl | 0.9-0.11 | **1.13.0** |
@@ -163,7 +163,7 @@ Correcciones de contenido, no solo pines:
 | 7 | **Cuantización de `bitsandbytes` en este Mac** (Semana 7 Día 1): 8-bit y 4-bit fallan con "Some modules are dispatched on the CPU or the disk". Es una limitación de no tener GPU CUDA; en Colab con T4 no ocurre. | Limitación del entorno de verificación |
 | 8 | **Deprecaciones de LangChain que siguen funcionando pero avisan**: `ConversationBufferMemory` y `ConversationalRetrievalChain` avisan de `will be removed in 2.0.0`. LangChain recomienda `langchain.agents.create_agent` con checkpointing. Cambiar a ese enfoque sería otra lección distinta. | **Candidato a regrabación**, no urgente |
 | 9 | **`environment.yml` declara `python=3.11`** y la verificación se hizo con 3.12. No se ha tocado porque cambiar la versión de Python del entorno de conda es una decisión de más calado que un pin. | A decidir |
-| 10 | **`pipeline("text-to-speech")` está roto en transformers 5.17.0** — `text_to_audio.py` llama a `.to(dtype=...)` sobre un `BatchEncoding`, que solo acepta `device`. Es un bug **de la librería**, no del curso; se ha esquivado usando SpeechT5 directamente. Si lo arreglan río arriba, se podría volver al pipeline de una línea. | Esquivado, revisar en el futuro |
+| 10 | **`pipeline("text-to-speech")` está roto en transformers 5.17.0** — `text_to_audio.py` llama a `.to(dtype=...)` sobre un `BatchEncoding`, que solo acepta `device`. Es un bug **de la librería**, no del curso; se ha esquivado usando SpeechT5 directamente. Se arregló río arriba en **transformers 5.18.0** (30-sep-2026), y desde noviembre la rama fija esa versión (sección 9): la línea del vídeo vuelve a funcionar. Los cuadernos siguen con SpeechT5 directo, que funciona con las dos. | **Arreglado río arriba; pin subido a 5.18.0** |
 
 ---
 
@@ -282,3 +282,9 @@ Comprobado contra la documentación oficial y los SDK fijados, **sin claves**: n
 | `31d86c0` | **`week2/day3`, chat del «cinturon»**: el mensaje del usuario se enviaba dos veces en cada turno (en la lista inicial y en un `append` final), resto del refactor de upstream `86763f2` (octubre de 2024) | Se comenta el `append` sobrante (la línea se ve en el vídeo) | Con un transporte simulado: antes, el mensaje viajaba 2 veces; después, 1 |
 
 **Lo que puede verse distinto al vídeo:** las celdas de Gemini (otra forma de llamar al SDK, mismo resultado) y el nombre del modelo de imagen.
+
+### `transformers` 5.17.0 → 5.18.0
+
+- **`pipeline("text-to-speech", "microsoft/speecht5_tts")` fallaba con el pin 5.17.0** (`TypeError: BatchEncoding.to() got an unexpected keyword argument 'dtype'`, punto 10 de la sección 5) y funciona desde 5.18.0 (PyPI, 30-sep-2026). Reproducido en CPU con la voz 7306 real: con 5.17.0, `TypeError`; con 5.18.0, el pipeline devuelve audio a 16 kHz. La vía directa de SpeechT5 que usan `week3/day1` y `day2` funciona con las dos. **Arreglo:** `transformers==5.18.0` en `requirements.txt` y `environment.yml` (la versión mínima que funciona), y el comentario de esas dos celdas ya no dice que el pipeline esté «roto en la versión actual».
+- **No rompe el resto:** `uv pip compile` de `requirements.txt` con 5.18.0 resuelve el mismo entorno salvo `transformers` (ningún otro paquete cambia de versión). Comprobado en CPU con 5.17.0 y 5.18.0, con resultados idénticos: tokenizadores y plantillas de chat de `Phi-3-mini-4k-instruct`, `Qwen2-7B-Instruct` y `starcoder2-3b` (Semana 3 Día 3), el patrón `apply_chat_template(..., return_dict=True)` + `generate(**inputs)` de los Días 4 y 5 (con un modelo pequeño sin gate, en greedy), el pipeline de sentimiento y `gpt2` de `week3/day2`, los embeddings de `all-MiniLM-L6-v2` (`sentence-transformers` 6.0.1) y el `SFTConfig` de `week7/day3 and 4`. No se han probado en este cambio los modelos con gate (Llama, Gemma), NER ni zero-shot (modelos de más de 1 GB), ni nada en GPU.
+- Con esto, `requirements.txt` ya no es exactamente el `pip freeze` de septiembre que describe la sección 4: difieren `transformers` (5.18.0) y `google-genai` (sustituye a `google-generativeai`).

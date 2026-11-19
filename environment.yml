@@ -36,7 +36,7 @@ dependencies:
     # Interfaz
     - gradio==6.27.0
     # HuggingFace / modelos abiertos
-    - transformers==5.17.0
+    - transformers==5.18.0
     - huggingface_hub==1.31.0
     - datasets==5.0.1
     - accelerate==1.15.0
